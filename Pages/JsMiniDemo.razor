@@ -1,0 +1,118 @@
+﻿@page "/js-mini-demo"
+
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<PageTitle>JavaScript Interop Demo</PageTitle>
+
+<h3>JavaScript Interop Mini Demo</h3>
+
+<div class="mb-3">
+
+    <button class="btn btn-primary me-2"
+            @onclick="LoadTitle">
+        Get Page Title
+    </button>
+
+    <button class="btn btn-success me-2"
+            @onclick="SetTitle">
+        Set Page Title
+    </button>
+
+    <button class="btn btn-secondary"
+            @onclick="ScrollBottom">
+        Scroll to Bottom
+    </button>
+
+</div>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-info">
+        @message
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong>
+        @errorMessage
+    </div>
+}
+
+<div style="height: 900px;">
+    <p>
+        This area makes the page tall enough
+        to demonstrate scrolling.
+    </p>
+</div>
+
+<h4>Bottom of Page</h4>
+
+<p>
+    You have reached the bottom of the page.
+</p>
+
+@code {
+
+    private string message = "";
+
+    private string errorMessage = "";
+
+    private async Task LoadTitle()
+    {
+        try
+        {
+            errorMessage = "";
+
+            string title =
+                await JS.InvokeAsync<string>(
+                    "getWindowTitle");
+
+            message =
+                $"Current title: {title}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task SetTitle()
+    {
+        try
+        {
+            errorMessage = "";
+
+            await JS.InvokeVoidAsync(
+                "setWindowTitle",
+                "Blazor JS Interop Demo");
+
+            message =
+                "Page title updated.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task ScrollBottom()
+    {
+        try
+        {
+            errorMessage = "";
+
+            await JS.InvokeVoidAsync(
+                "scrollToBottom");
+
+            message =
+                "Scrolling...";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
